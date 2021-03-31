@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 
 class BasePageLocators:
     LOGIN_BUTTON_LOCATOR = (By.XPATH, './/div[text()="Войти"]')
-    USER_LOCATOR = (By.XPATH, './/div[contains(@title, "Mary")]')
+    USER_LOCATOR = (By.XPATH, './/div[text()="Balance: "]')
     LOGOFF_BUTTON_LOCATOR = (By.XPATH, './/a[@href="/logout"]')
 
 
