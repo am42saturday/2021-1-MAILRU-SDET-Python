@@ -4,8 +4,8 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from ui.locators.pages_locators import BasePageLocators
-from data import CLICK_RETRY, BASE_TIMEOUT, BASE_PERIOD
+from hw1.ui.locators.pages_locators import BasePageLocators
+from hw1.data import CLICK_RETRY, BASE_TIMEOUT, BASE_PERIOD
 
 
 class BasePage(object):

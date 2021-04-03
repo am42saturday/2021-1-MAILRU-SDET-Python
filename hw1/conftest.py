@@ -1,4 +1,4 @@
-from ui.fixtures import *
+from hw1.ui.fixtures import *
 
 
 def pytest_addoption(parser):

@@ -1,10 +1,10 @@
 import pytest
 
-from base_tests.base import BaseCase
-from data import email, password, user_name, user_email
-from ui.locators.pages_locators import MainPageLocators
-from data import BASE_TIMEOUT, BASE_PERIOD
-from ui.utils import generate_random_name
+from hw1.base_tests.base import BaseCase
+from hw1.data import email, password, user_name, user_email
+from hw1.ui.locators.pages_locators import MainPageLocators
+from hw1.data import BASE_TIMEOUT, BASE_PERIOD
+from hw1.ui.utils import generate_random_name
 
 
 class TestOne(BaseCase):

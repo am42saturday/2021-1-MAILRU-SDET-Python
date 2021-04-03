@@ -1,8 +1,8 @@
 from selenium.webdriver.remote.webelement import WebElement
 
-from ui.pages.base_page import BasePage
-from ui.locators.pages_locators import MainPageLocators
-from data import BASE_TIMEOUT
+from hw1.ui.pages.base_page import BasePage
+from hw1.ui.locators.pages_locators import MainPageLocators
+from hw1.data import BASE_TIMEOUT
 
 
 class MainPage(BasePage):

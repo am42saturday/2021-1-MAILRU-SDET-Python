@@ -1,9 +1,9 @@
 import pytest
 from _pytest.fixtures import FixtureRequest
 
-from ui.pages.base_page import BasePage
-from ui.pages.login_page import LoginPage
-from ui.pages.main_page import MainPage
+from hw1.ui.pages.base_page import BasePage
+from hw1.ui.pages.login_page import LoginPage
+from hw1.ui.pages.main_page import MainPage
 
 
 class BaseCase:
