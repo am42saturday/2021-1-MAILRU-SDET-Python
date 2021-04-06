@@ -136,3 +136,10 @@ dmypy.json
 
 # pytype static type analyzer
 .pytype/
+
+# test results
+report
+allure-report
+
+.deb
+.log
