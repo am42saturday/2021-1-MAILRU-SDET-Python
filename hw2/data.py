@@ -14,4 +14,5 @@ wrong_password = 'wfaetybruvTH2'
 
 link_for_campaign = 'https://borderlands.com'
 campaign_image_path = os.path.abspath('ui/campaign_image.jpg')
+tests_logs_dir = os.path.abspath("tests_logs")
 

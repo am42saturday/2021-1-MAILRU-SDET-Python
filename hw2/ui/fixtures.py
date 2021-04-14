@@ -9,6 +9,7 @@ from hw2.ui.pages.base_page import BasePage
 from hw2.ui.pages.campaigns_page import CampaignsPage
 from hw2.ui.pages.login_page import LoginPage
 from hw2.ui.pages.audiences_page import AudiencesPage
+from hw2.data import tests_logs_dir
 
 
 @pytest.fixture(scope='function')
@@ -46,7 +47,9 @@ def driver(config):
 @pytest.fixture(scope='function', autouse=True)
 def ui_report(driver, request):
     test_name = request._pyfuncitem.nodeid.replace('/', '_').replace(':', '_')
-    browser_logfile = os.path.join(os.path.abspath('tests_logs'), test_name)
+    if not os.path.isdir(tests_logs_dir):
+        os.mkdir(tests_logs_dir)
+    browser_logfile = os.path.join(tests_logs_dir, test_name)
     with open(browser_logfile, 'w') as f:
         for i in driver.get_log('browser'):
             f.write(f"{i['level']} - {i['source']}\n{i['message']}\n\n")
@@ -58,4 +61,3 @@ def ui_report(driver, request):
     yield
     if request.session.testsfailed > failed_tests_count:
         allure.attach(driver.get_screenshot_as_png(), "Screenshot", allure.attachment_type.PNG)
-
