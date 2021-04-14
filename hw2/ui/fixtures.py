@@ -45,15 +45,17 @@ def driver(config):
 
 @pytest.fixture(scope='function', autouse=True)
 def ui_report(driver, request):
+    test_name = request._pyfuncitem.nodeid.replace('/', '_').replace(':', '_')
+    browser_logfile = os.path.join(os.path.abspath('tests_logs'), test_name)
+    with open(browser_logfile, 'w') as f:
+        for i in driver.get_log('browser'):
+            f.write(f"{i['level']} - {i['source']}\n{i['message']}\n\n")
+
+    with open(browser_logfile, 'r') as f:
+        allure.attach(f.read(), 'browser.log', attachment_type=allure.attachment_type.TEXT)
+
     failed_tests_count = request.session.testsfailed
     yield
     if request.session.testsfailed > failed_tests_count:
         allure.attach(driver.get_screenshot_as_png(), "Screenshot", allure.attachment_type.PNG)
-        browser_logfile = os.path.join('browser.log')
-        with open(browser_logfile, 'w') as f:
-            for i in driver.get_log('browser'):
-                f.write(f"{i['level']} - {i['source']}\n{i['message']}\n\n")
-
-        with open(browser_logfile, 'r') as f:
-            allure.attach(f.read(), 'browser.log', attachment_type=allure.attachment_type.TEXT)
 

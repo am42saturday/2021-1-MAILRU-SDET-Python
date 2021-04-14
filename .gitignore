@@ -143,3 +143,4 @@ allure-report
 
 .deb
 .log
+/hw2/tests_logs/
