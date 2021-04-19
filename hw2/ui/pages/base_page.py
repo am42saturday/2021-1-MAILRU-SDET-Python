@@ -36,7 +36,7 @@ class BasePage(object):
             _time += period
         return False
 
-    def wait(self, timeout=BASE_TIMEOUT):
+    def wait(self, timeout=BASE_TIMEOUT) -> WebDriverWait:
         return WebDriverWait(self.driver, timeout=timeout)
 
     def click(self, locator, timeout=BASE_TIMEOUT):
