@@ -31,8 +31,7 @@ class TestCampaigns(BaseCase):
     def test_create_campaign(self):
         self.campaigns_page.open_create_new_campaign()
         campaign_title = 'Campaign ' + generate_random_name(5)
-        self.campaigns_page.fill_in_campaign_data(campaign_title)
-        self.campaigns_page.create_campaign()
+        self.campaigns_page.create_campaign(campaign_title)
         assert self.audiences_page.find_on_page('Active campaigns')
         assert self.audiences_page.find_on_page(campaign_title)
         self.campaigns_page.delete_campaign(campaign_title)
@@ -47,8 +46,8 @@ class TestAudiences(BaseCase):
         self.audiences_page.open_audiences_page()
         self.audiences_page.create_audience_segment()
         segment_title = 'Segment ' + generate_random_name(5)
-        self.audiences_page.fill_in_segment_data(self.audiences_page.locators.APPS_AND_GAMES_IN_SOCIAL_NETWORKS_LOCATOR,
-                                                 segment_title)
+        self.audiences_page.create_segment(self.audiences_page.locators.APPS_AND_GAMES_IN_SOCIAL_NETWORKS_LOCATOR,
+                                           segment_title)
         assert self.audiences_page.find_on_page('Segments list')
         assert self.audiences_page.find_on_page(segment_title)
         self.audiences_page.delete_segment(segment_title)
@@ -60,8 +59,8 @@ class TestAudiences(BaseCase):
         self.audiences_page.open_audiences_page()
         self.audiences_page.create_audience_segment()
         segment_title = 'Segment ' + generate_random_name(5)
-        self.audiences_page.fill_in_segment_data(self.audiences_page.locators.APPS_AND_GAMES_IN_SOCIAL_NETWORKS_LOCATOR,
-                                                 segment_title)
+        self.audiences_page.create_segment(self.audiences_page.locators.APPS_AND_GAMES_IN_SOCIAL_NETWORKS_LOCATOR,
+                                           segment_title)
         assert self.audiences_page.find_on_page('Segments list')
         self.audiences_page.delete_segment(segment_title)
         assert self.audiences_page.check_absense_on_page(segment_title)

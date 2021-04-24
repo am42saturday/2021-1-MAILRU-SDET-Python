@@ -22,7 +22,7 @@ class AudiencesPage(BasePage):
             self.click(self.locators.CREATE_ANOTHER_SEGMENT, timeout=BASE_TIMEOUT)
 
     @allure.step('Заполнить данные сегмента')
-    def fill_in_segment_data(self, choose_segment_locator, title):
+    def create_segment(self, choose_segment_locator, title):
         self.click(choose_segment_locator, timeout=BASE_TIMEOUT)
         self.click(self.locators.PAID_AND_PLAYED_LOCATOR, timeout=BASE_TIMEOUT)
         self.click(self.locators.ADD_SEGMENT_LOCATOR, timeout=BASE_TIMEOUT)

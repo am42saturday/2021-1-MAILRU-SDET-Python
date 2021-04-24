@@ -1,7 +1,6 @@
-import time
-
 import allure
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.expected_conditions import element_to_be_clickable
 
 from hw2.data import BASE_TIMEOUT, link_for_campaign, campaign_image_path
 from hw2.ui.locators.pages_locators import CampaignsPageLocators
@@ -27,10 +26,12 @@ class CampaignsPage(BasePage):
     @allure.step('Заполнить данные новой кампании')
     def fill_in_campaign_data(self, title):
         self.click(self.locators.CAMPAIGN_OBJECTIVE_REACH_LOCATOR, timeout=BASE_TIMEOUT)
+
         self.write_text(self.locators.LINK_FIELD_LOCATOR, link_for_campaign)
-        time.sleep(3)
+        self.wait(BASE_TIMEOUT).until(element_to_be_clickable(self.locators.CAMPAIGN_NAME_FIELD_LOCATOR))
         self.write_text(self.locators.CAMPAIGN_NAME_FIELD_LOCATOR, title)
         self.click(self.locators.CHOOSE_BANNER_AD_FORMAT, timeout=BASE_TIMEOUT)
+
         try:
             self.upload_file(self.locators.UPLOAD_IMAGE_LOCATOR, campaign_image_path)
         except:
@@ -38,7 +39,8 @@ class CampaignsPage(BasePage):
         self.click(self.locators.SAVE_AD_LOCATOR, timeout=BASE_TIMEOUT)
 
     @allure.step('Создать кампанию')
-    def create_campaign(self):
+    def create_campaign(self, title):
+        self.fill_in_campaign_data(title)
         self.click(self.locators.CREATE_CAMPAIGN_LOCATOR)
 
     @allure.step('Удалить кампанию')
