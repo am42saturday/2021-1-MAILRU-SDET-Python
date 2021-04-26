@@ -26,11 +26,12 @@ class ApiClient:
         self.sessionid_gtp = None
 
     @staticmethod
-    def log_pre(method, url, headers, data, expected_status):
+    def log_pre(method, url, headers, data, params, expected_status):
         logger.info(f'Performing {method} request:\n'
                     f'URL: {url}\n'
                     f'HEADERS: {headers}\n'
                     f'DATA: {data}\n\n'
+                    f'PARAMS: {params}\n\n'
                     f'expected status: {expected_status}\n\n')
 
     @staticmethod
@@ -50,21 +51,25 @@ class ApiClient:
             logger.info(f'{log_str}\n'
                         f'RESPONSE CONTENT: {response.text}\n\n')
 
-    def _request(self, method, url, headers=None, data=None, params=None, expected_status=200):
-        self.log_pre(method, url, headers, data, expected_status)
+    def _request(self, method, url, headers=None, data=None, params=None, expected_status=200, jsonify=True):
+        self.log_pre(method, url, headers, data, params, expected_status)
         response = self.session.request(method, url, headers=headers, data=data, params=params)
         self.log_post(response)
 
         if response.status_code != expected_status:
             raise ResponseStatusCodeException(f'Got {response.status_code} {response.reason} for URL "{url}"!\n'
                                               f'Expected status_code: {expected_status}.')
+        if jsonify:
+            binary_content = response.content
+            parsed_response = json.loads(binary_content.decode())
+            return parsed_response
         return response
 
     @allure.step('Получение csrf-токена')
-    def get_token(self) -> str:
+    def get_token(self):
         location = urljoin(self.base_url, '/csrf/')
 
-        res = self._request('GET', location)
+        res = self._request('GET', location, jsonify=False)
 
         headers = res.headers['set-cookie'].split(';')
 
@@ -93,9 +98,9 @@ class ApiClient:
             'failure': 'https://account.my.com/login/',
         }
 
-        self._request('POST', location, headers=headers, data=data)
+        self._request('POST', location, headers=headers, data=data, jsonify=False)
 
-        csrftoken = self.get_token()
+        self.csrf_token = self.get_token()
         location = urljoin(self.base_url, '/api/v2/user/session.json')
 
         params = {
@@ -110,31 +115,14 @@ class ApiClient:
 
         result: Response = self._request('GET', location, params=params)
 
-        return result, csrftoken
-
-    @allure.step('Открыть страницу Audiences')
-    def open_segments(self):
-        location = urljoin(self.base_url, '/segments/segments_list')
-
-        headers = {
-            'Referer': 'https://target.my.com/segments/segments_list',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-
-        params = {
-            'fields': 'relations__object_type,relations__object_id,relations__params,relations__params__score,'
-                      'relations__id,relations_count,id,name,pass_condition,created,campaign_ids,users,flags',
-            'limit': 500,
-        }
-
-        self._request('GET', location, headers=headers, params=params)
+        return result
 
     @allure.step('Создать сегмент')
-    def create_segment(self, segment_name, csrftoken):
+    def create_segment(self, segment_name):
         location = urljoin(self.base_url, '/api/v2/remarketing/segments.json')
 
         headers = {'Referer': 'https://target.my.com/segments/segments_list/new/',
-                   'X-CSRFToken': csrftoken}
+                   'X-CSRFToken': self.csrf_token}
 
         params = {
             'fields': 'relations__object_type,relations__object_id,relations__params,'
@@ -148,20 +136,36 @@ class ApiClient:
 
         result: Response = self._request('POST', location, headers=headers, data=data, params=params)
 
-        segment_id = json.loads(result.content)['id']
+        segment_id = result['id']
 
         return result, segment_id
 
     @allure.step('Удалить сегмент')
-    def delete_segment(self, segment_id, csrftoken) -> Response:
+    def delete_segment(self, segment_id) -> Response:
         location = urljoin(self.base_url, '/api/v1/remarketing/mass_action/delete.json')
 
         headers = {'Referer': 'https://target.my.com/segments/segments_list',
-                   'X-CSRFToken': csrftoken}
+                   'X-CSRFToken': self.csrf_token}
 
         data = '[{"source_id":%s,"source_type":"segment"}]' % segment_id
 
         result: Response = self._request('POST', location, headers=headers, data=data)
 
         return result
+
+    @allure.step('Открыть сегмент по id')
+    def open_segment(self, segment_id):
+        location = urljoin(self.base_url, '/api/v2/coverage/segment.json')
+
+        headers = {
+            'Referer': 'https://target.my.com/segments/segments_list',
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+
+        params = {'id': segment_id}
+
+        result = self._request('GET', location, headers=headers, params=params)
+        return result
+
+
 

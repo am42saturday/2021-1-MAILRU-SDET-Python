@@ -13,4 +13,4 @@ class ApiBase:
         self.api_client = api_client
 
         if self.authorize:
-            res, self.csrftoken = self.api_client.post_login(user_login, user_password)
+            self.api_client.post_login(user_login, user_password)

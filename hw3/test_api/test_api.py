@@ -22,19 +22,28 @@ class TestSegment(ApiBase):
     @pytest.mark.API('API')
     @allure.title('Тест на создание сегмента')
     def test_create_segment(self):
-        self.api_client.open_segments()
         segment_name = Builder.create_title()
-        response, segment_id = self.api_client.create_segment(segment_name, self.csrftoken)
-        assert response.status_code == 200
-        self.api_client.delete_segment(segment_id, self.csrftoken)
+        response, segment_id = self.api_client.create_segment(segment_name)
+
+        # Check created segment exists
+        response = self.api_client.open_segment(segment_id)
+        assert response['items'][0]['status'] != 'not found'
+
+        # Delete test segment
+        self.api_client.delete_segment(segment_id)
 
     @pytest.mark.API('API')
     @allure.title('Тест на удаление сегмента')
     def test_delete_segment(self):
-        self.api_client.open_segments()
         segment_name = Builder.create_title()
-        res, segment_id = self.api_client.create_segment(segment_name, self.csrftoken)
-        response = self.api_client.delete_segment(segment_id, self.csrftoken)
-        assert response.status_code == 200
-        assert not json.loads(response.content)['errors']
+        res, segment_id = self.api_client.create_segment(segment_name)
+
+        response = self.api_client.delete_segment(segment_id)
+        assert not response['errors']
+
+        # Check deleted segment not found
+        response = self.api_client.open_segment(segment_id)
+        assert response['items'][0]['status'] == 'not found'
+
+
 
