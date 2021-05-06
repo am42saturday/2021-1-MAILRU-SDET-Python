@@ -24,3 +24,6 @@ six~=1.15.0
 toml~=0.10.2
 urllib3~=1.26.4
 webdriver-manager~=3.3.0
+SQLAlchemy~=1.4.13
+pycparser~=2.20
+PyMySQL~=1.0.2
