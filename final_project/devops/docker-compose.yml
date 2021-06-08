@@ -1,0 +1,33 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: final_project_mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass
+      - MYSQL_DATABASE=FINAL_PROJECT
+      - MYSQL_USER=test_qa
+      - MYSQL_PASSWORD=qa_test
+    volumes:
+      - ./mysql/initial_mysql.sql:/docker-entrypoint-initdb.d/initial_mysql.sql:ro
+  vk_mock:
+    build: ./vk_mock/
+    container_name: vk_mock
+    ports:
+      - "8090:8090"
+  myapp:
+    image: myapp:latest
+    container_name: myapp
+    command: /app/myapp --config=/config
+    ports:
+      - "8095:8095"
+    volumes:
+      - ./config:/config
+    depends_on:
+      mysql:
+        condition: service_healthy
